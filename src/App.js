@@ -684,10 +684,10 @@ function CreateSearchModal({onClose, onCreate}){
           {/* 3. Sources */}
           <div>
             <label style={{display:'block',fontSize:12.5,fontWeight:500,marginBottom:8,color:'#374151'}}>Sources</label>
-            <div style={{display:'flex',gap:6,overflowX:'auto',paddingBottom:2}}>
+            <div style={{display:'flex',gap:5}}>
               {sources.map(s=>(
                 <div key={s.id} onClick={()=>setSrcs(p=>{ const n=new Set(p); n.has(s.id)?n.delete(s.id):n.add(s.id); return n; })}
-                  style={{border:`1.5px solid ${srcs.has(s.id)?'#1e40af':'#e5e7eb'}`,borderRadius:6,padding:'8px 6px',textAlign:'center',cursor:'pointer',width:76,flexShrink:0,background:srcs.has(s.id)?'#eff6ff':'#fff',transition:'all .15s'}}>
+                  style={{border:`1.5px solid ${srcs.has(s.id)?'#1e40af':'#e5e7eb'}`,borderRadius:6,padding:'8px 6px',textAlign:'center',cursor:'pointer',flex:1,minWidth:0,background:srcs.has(s.id)?'#eff6ff':'#fff',transition:'all .15s'}}>
                   <div style={{width:24,height:24,borderRadius:'50%',background:s.bg,color:'#fff',fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 5px'}}>{s.sym}</div>
                   <div style={{fontSize:10.5,color:srcs.has(s.id)?'#1e40af':'#6b7280',fontWeight:500}}>{s.label}</div>
                 </div>
