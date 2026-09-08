@@ -603,9 +603,11 @@ function CreateSearchModal({onClose, onCreate}){
   const [kwInput, setKwInput] = useState('');
   const [matchMode,setMatchMode] = useState('any');
   const [srcs,    setSrcs]    = useState(new Set(['fb','x','rd']));
-  const [advOpen, setAdvOpen] = useState(false);
-  const [exInput, setExInput] = useState('');
-  const [exKws,   setExKws]   = useState([]);
+  const [advOpen,  setAdvOpen]  = useState(false);
+  const [exInput,  setExInput]  = useState('');
+  const [exKws,    setExKws]    = useState([]);
+  const [fbPageInput, setFbPageInput] = useState('');
+  const [fbPages,     setFbPages]     = useState([]);
 
   const sources = [
     {id:'fb', label:'Facebook',   bg:'#1877f2', sym:'f' },
@@ -617,7 +619,8 @@ function CreateSearchModal({onClose, onCreate}){
   ];
 
   const igNeedsHash = srcs.has('ig') && !kws.some(k => k.startsWith('#'));
-  const canCreate   = name.trim() && kws.length > 0 && srcs.size > 0 && !igNeedsHash;
+  const fbNeedsPage = srcs.has('fb') && fbPages.length === 0;
+  const canCreate   = name.trim() && kws.length > 0 && srcs.size > 0 && !igNeedsHash && !fbNeedsPage;
 
   const addKw  = () => { if(kwInput.trim()){ setKws(p=>[...p,kwInput.trim()]); setKwInput(''); } };
   const addExKw= () => { if(exInput.trim()){ setExKws(p=>[...p,exInput.trim()]); setExInput(''); } };
@@ -691,6 +694,41 @@ function CreateSearchModal({onClose, onCreate}){
               ))}
             </div>
           </div>
+
+          {/* Facebook page config */}
+          {srcs.has('fb') && (
+            <div style={{border:'1.5px solid #bfdbfe',borderRadius:7,padding:'14px 16px',background:'#f0f7ff'}}>
+              {/* Header */}
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:6}}>
+                <div style={{width:20,height:20,borderRadius:'50%',background:'#1877f2',color:'#fff',fontSize:10,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>f</div>
+                <span style={{fontSize:13,fontWeight:600,color:'#1e40af'}}>Facebook Pages</span>
+                <span style={{fontSize:11,color:'#3b82f6',marginLeft:2}}>— required</span>
+              </div>
+              <div style={{fontSize:12,color:'#3b82f6',marginBottom:10,lineHeight:1.5}}>
+                Facebook search only works within specific Pages you specify. Type the name of a Facebook Page and press Enter to add it.
+              </div>
+              {/* Chip input */}
+              <div style={{border:`1.5px solid ${fbPages.length===0?'#f97316':'#bfdbfe'}`,borderRadius:6,padding:'6px 10px',display:'flex',flexWrap:'wrap',gap:6,alignItems:'center',minHeight:40,background:'#fff',cursor:'text'}}
+                onClick={e=>e.currentTarget.querySelector('input')?.focus()}>
+                {fbPages.map((pg,i)=>(
+                  <span key={i} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#dbeafe',color:'#1e40af',borderRadius:12,padding:'3px 10px',fontSize:12,fontWeight:500}}>
+                    <span style={{width:14,height:14,borderRadius:'50%',background:'#1877f2',color:'#fff',fontSize:7,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>f</span>
+                    {pg}
+                    <span onClick={()=>setFbPages(p=>p.filter((_,j)=>j!==i))} style={{cursor:'pointer',fontSize:12,opacity:.6,marginLeft:1}}>×</span>
+                  </span>
+                ))}
+                <input value={fbPageInput} onChange={e=>setFbPageInput(e.target.value)}
+                  onKeyDown={e=>{ if(e.key==='Enter'&&fbPageInput.trim()){ e.preventDefault(); setFbPages(p=>[...p,fbPageInput.trim()]); setFbPageInput(''); } }}
+                  placeholder={fbPages.length===0 ? 'e.g. Zylker Travels, Nike, Reebok…' : 'Add another page…'}
+                  style={{border:'none',outline:'none',fontSize:12.5,flex:1,minWidth:140,color:'#374151',background:'transparent'}}/>
+              </div>
+              {/* Validation hint */}
+              {fbPages.length === 0
+                ? <div style={{marginTop:8,fontSize:11.5,color:'#f97316',display:'flex',alignItems:'center',gap:5,fontWeight:500}}>⚠ Add at least one Facebook Page to enable this source.</div>
+                : <div style={{marginTop:8,fontSize:11.5,color:'#10b981',display:'flex',alignItems:'center',gap:5}}><span>✓</span> {fbPages.length} page{fbPages.length>1?'s':''} added</div>
+              }
+            </div>
+          )}
 
           {/* Reddit scope — shown when Reddit selected */}
           {srcs.has('rd') && (
